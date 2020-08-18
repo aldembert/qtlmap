@@ -382,16 +382,16 @@ process merge_permutation_batches {
  */
 process run_nominal {
     tag "${study_qtl_group} - ${batch_index}/${params.n_batches}"
-
+    publishDir "${params.outdir}/temp_batches", mode: 'copy'
     when:
     params.run_nominal
     
     input:
     each batch_index from 1..params.n_batches
-    set study_qtl_group, file(bed), file(bed_index), file(fastqtl_bed), file(fastqtl_bed_index), file(vcf), file(vcf_index), file(covariate) from tuple_run_nominal.join(covariates_run_nominal)
+    tuple study_qtl_group, file(bed), file(bed_index), file(fastqtl_bed), file(fastqtl_bed_index), file(vcf), file(vcf_index), file(covariate) from tuple_run_nominal.join(covariates_run_nominal)
 
     output:
-    set study_qtl_group, file("${study_qtl_group}.nominal.batch.${batch_index}.${params.n_batches}.txt") into batch_files_merge_nominal_batches
+    tuple study_qtl_group, file("${study_qtl_group}.nominal.batch.${batch_index}.${params.n_batches}.txt") into batch_files_merge_nominal_batches
 
     script:
     """
@@ -408,19 +408,19 @@ process run_nominal {
  */
 process merge_nominal_batches {
     tag "${study_qtl_group}"
-
+    stageInMode = 'copy'
     when:
     params.run_nominal
 
     input:
-    set study_qtl_group, batch_file_names from batch_files_merge_nominal_batches.groupTuple(size: params.n_batches, sort: true)  
+    tuple study_qtl_group, batch_file_names from batch_files_merge_nominal_batches.groupTuple(size: params.n_batches, sort: true)  
 
     output:
-    set study_qtl_group, file("${study_qtl_group}.nominal.tab.txt.gz") into nominal_merged_tab_sort_qtltools_output
+    tuple study_qtl_group, file("${study_qtl_group}.nominal.tab.txt.gz") into nominal_merged_tab_sort_qtltools_output
 
     script:
     """
-    cat ${batch_file_names.join(' ').replaceAll(/$\/\S+\//,"")} | \\
+    cat ${batch_file_names.join(' ').replaceAll(/\/\S+\//,"$PWD/${params.outdir}/temp_batches/")} | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
         csvtk replace -t -H -f 10 -p ^chr | \\
