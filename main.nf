@@ -420,7 +420,7 @@ process merge_nominal_batches {
 
     script:
     """
-    cat ${batch_file_names.join(' ')} | \\
+    cat ${batch_file_names.join(' ').replaceAll(/$\/\S+\//,"")} | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
         csvtk replace -t -H -f 10 -p ^chr | \\
