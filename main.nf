@@ -282,7 +282,7 @@ process extract_variant_info {
     set study_qtl_group, file(vcf) from vcfs_extract_variant_info
     
     output:
-    file "${study_qtl_group}.variant_information.txt.gz"
+    path "${study_qtl_group}.variant_information.txt.gz"
 
     script:
     if (params.is_imputed) {
@@ -312,7 +312,7 @@ process make_pca_covariates {
     set study_qtl_group, file(phenotype_pca), file(vcf) from tuple_perform_pca
 
     output:
-    file "${study_qtl_group}.geno.pca*"
+    path "${study_qtl_group}.geno.pca*"
     set study_qtl_group, file("${study_qtl_group}.covariates.txt") into covariates_run_nominal, covariates_run_permutation
 
     script:
@@ -367,7 +367,7 @@ process merge_permutation_batches {
     set study_qtl_group, batch_file_names from batch_files_merge_permutation_batches.groupTuple(size: params.n_batches, sort: true)  
 
     output:
-    file "${study_qtl_group}.permuted.txt.gz"
+    path "${study_qtl_group}.permuted.txt.gz"
 
     script:
     """
