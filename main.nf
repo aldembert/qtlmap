@@ -383,8 +383,8 @@ process merge_permutation_batches {
  */
 process run_nominal {
     tag "${study_qtl_group} - ${batch_index}/${params.n_batches}"
-    publishDir "$workDir/temp_batches/"
-    echo true
+    //publishDir "$workDir/temp_batches/"
+    
     when:
     params.run_nominal
     
@@ -427,7 +427,7 @@ process merge_nominal_batches {
     script:
     """
     ls -lrtah
-    cat ${batch_file_names.join(' ').replaceAll(/\/\S+\//,"$workDir/temp_batches/")} | \\
+    cat ${batch_file_names.join(' ')} | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
         csvtk replace -t -H -f 10 -p ^chr | \\
