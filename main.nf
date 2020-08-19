@@ -419,7 +419,7 @@ process merge_nominal_batches {
     maxRetries = 2
     input:
     tuple study_qtl_group, batch_file_names from batch_files_merge_nominal_batches.groupTuple(size: params.n_batches, sort: true)
-    path batchFile from batch_files_merge_nominal
+    path '*.txt' from batch_files_merge_nominal.collect()
 
     output:
     tuple study_qtl_group, file("${study_qtl_group}.nominal.tab.txt.gz") into nominal_merged_tab_sort_qtltools_output
@@ -427,7 +427,8 @@ process merge_nominal_batches {
     script:
     """
     ls -lrtah
-    cat ${batch_file_names.collect{"s3:/" + it}.join(' ')} | \\
+
+    cat *.txt | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
         csvtk replace -t -H -f 10 -p ^chr | \\
