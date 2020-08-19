@@ -307,7 +307,7 @@ qtl_group_pheno_PCAs
 process make_pca_covariates {
     tag "${study_qtl_group}"
     publishDir "${params.outdir}/PCA/${study_qtl_group}", mode: 'copy'
-
+    echo true
     input:
     set study_qtl_group, file(phenotype_pca), file(vcf) from tuple_perform_pca
 
@@ -317,6 +317,7 @@ process make_pca_covariates {
 
     script:
     """
+    ls -lrtah
     plink2 --vcf $vcf --vcf-half-call h --indep-pairwise 50000 200 0.05 --out ${study_qtl_group}_pruned_variants --threads ${task.cpus} --memory ${task.memory.mega}
     plink2 --vcf $vcf --vcf-half-call h --extract ${study_qtl_group}_pruned_variants.prune.in --make-bed --out ${study_qtl_group}_pruned
     plink2 -bfile ${study_qtl_group}_pruned --pca ${params.n_geno_pcs} header tabs
@@ -383,6 +384,7 @@ process merge_permutation_batches {
 process run_nominal {
     tag "${study_qtl_group} - ${batch_index}/${params.n_batches}"
     publishDir "${params.outdir}/temp_batches", mode: 'copy'
+    echo true
     when:
     params.run_nominal
     
@@ -395,6 +397,7 @@ process run_nominal {
 
     script:
     """
+        ls -lrtah
 	fastQTL --vcf $vcf --bed $fastqtl_bed --cov $covariate \\
         --chunk $batch_index ${params.n_batches} \\
         --out ${study_qtl_group}.nominal.batch.${batch_index}.${params.n_batches}.txt \\
