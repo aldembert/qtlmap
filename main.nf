@@ -427,7 +427,7 @@ process merge_nominal_batches {
     script:
     """
     ls -lrtah
-    cat ${batch_file_names.collect{"S3:/" + it}.join(' ')} | \\
+    cat ${batch_file_names.collect{"s3:/" + it}.join(' ')} | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
         csvtk replace -t -H -f 10 -p ^chr | \\
