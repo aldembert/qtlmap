@@ -409,6 +409,7 @@ process run_nominal {
 process merge_nominal_batches {
     tag "${study_qtl_group}"
     stageInMode = 'copy'
+    echo true
     when:
     params.run_nominal
 
@@ -420,6 +421,7 @@ process merge_nominal_batches {
 
     script:
     """
+    ls
     cat ${batch_file_names.join(' ').replaceAll(/\/\S+\//,"./")} | \\
         csvtk space2tab -T | \\
         csvtk sep -H -t -f 2 -s "_" | \\
