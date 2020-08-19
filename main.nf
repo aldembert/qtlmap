@@ -383,8 +383,8 @@ process merge_permutation_batches {
  */
 process run_nominal {
     tag "${study_qtl_group} - ${batch_index}/${params.n_batches}"
-    publishDir "$workDir/temp_batches/", mode: 'copy'
-    
+    publishDir "$workDir/temp_batches/"
+    echo true
     when:
     params.run_nominal
     
